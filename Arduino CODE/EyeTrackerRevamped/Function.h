@@ -9,9 +9,9 @@
 
 #include <XBOXONE.h>
 // Including the libraries for the IMU - acclerometer
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+//#include <Adafruit_Sensor.h>
+//#include <Adafruit_BNO055.h>
+//#include <utility/imumaths.h>
 
 // Including library for the matrix elements in the code
 #include <BasicLinearAlgebra.h>
@@ -47,7 +47,7 @@ enum PromAddress {
 // in the source file for this header.
 
 // BNO IMU object
-extern Adafruit_BNO055 bno;
+//extern Adafruit_BNO055 bno;
 
 // Hardware Serial object for comms with API
 // Hardware Serial is just a pointer to Serial1.

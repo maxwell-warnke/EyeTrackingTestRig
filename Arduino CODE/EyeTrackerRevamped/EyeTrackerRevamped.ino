@@ -44,6 +44,8 @@ void InitializeComponents()
   // Windows API Serial
   Serial1.begin(115200); // should test 230400
 
+  Serial3.begin(1000000);
+
   // checking for serial connection
   while (!Serial) {
     ;
@@ -51,11 +53,11 @@ void InitializeComponents()
   Serial.println("Serial On");
 
   // checking for IMU-accelerometer connection
-  if (!bno.begin())
-  {
-    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
-  }
-  bno.setExtCrystalUse(true);   // prepping the IMU
+//  if (!bno.begin())
+//  {
+//    Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+//  }
+//  bno.setExtCrystalUse(true);   // prepping the IMU
 
   // Checking for XBOX connection
   while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection

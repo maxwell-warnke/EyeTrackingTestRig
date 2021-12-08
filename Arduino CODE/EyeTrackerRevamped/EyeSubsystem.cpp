@@ -18,30 +18,93 @@ Eyes::Eyes()
 */
 void Eyes::init()
 {
-  this->xServoL.attach(xLPin);
-  this->zServoL.attach(zLPin);
-  this->xServoR.attach(xRPin);
-  this->zServoR.attach(zRPin);
+  this->dxl = new Dynamixel2Arduino(Serial3, DXL_DIR_PIN);
+
+  this->dxl->begin(1000000);
+  this->dxl->setPortProtocolVersion(DXL_PROTOCOL_VERSION);
+  /*
+     Intializing dynamixel objects.
+  */
+  // Turn off torque when configuring items in EEPROM area LEFT YAW
+  if (dxl->write(DXL_ID_YAW_L, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_off , TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("DYNAMIXEL Torque off for left yaw");
+  else
+    Serial.println("Error: Torque off failed for left yaw");
+
+  // Turn off torque when configuring items in EEPROM area LEFT PITCH
+  if (dxl->write(DXL_ID_PITCH_L, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_off , TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("DYNAMIXEL Torque off for left pitch");
+  else
+    Serial.println("Error: Torque off failed for left pitch");
+
+  // Turn off torque when configuring items in EEPROM area RIGHT YAW
+  if (dxl->write(DXL_ID_YAW_R, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_off , TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("DYNAMIXEL Torque off for left yaw");
+  else
+    Serial.println("Error: Torque off failed for right yaw");
+
+  // Turn off torque when configuring items in EEPROM area RIGHT PITCH
+  if (dxl->write(DXL_ID_PITCH_R, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_off , TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("DYNAMIXEL Torque off for left pitch");
+  else
+    Serial.println("Error: Torque off failed for right pitch");
+
+  // Set to Joint Mode LEFT YAW
+  //  if(dxl->write(DXL_ID_YAW_L, CW_ANGLE_LIMIT_ADDR, (uint8_t*)&goalPosition1, ANGLE_LIMIT_ADDR_LEN, TIMEOUT)
+  //        && dxl.write(DXL_ID_YAW_L, CCW_ANGLE_LIMIT_ADDR, (uint8_t*)&goalPosition2, ANGLE_LIMIT_ADDR_LEN, TIMEOUT))
+  //    Serial.println("Set operating mode");
+  //  else
+  //    Serial.println("Error: Set operating mode failed for left yaw");
+
+  // Set to Joint Mode Left PITCH
+  //  if(dxl->write(DXL_ID_PITCH_L, CW_ANGLE_LIMIT_ADDR, (uint8_t*)&goalPosition1, ANGLE_LIMIT_ADDR_LEN, TIMEOUT)
+  //        && dxl.write(DXL_ID_YAW_L, CCW_ANGLE_LIMIT_ADDR, (uint8_t*)&goalPosition2, ANGLE_LIMIT_ADDR_LEN, TIMEOUT))
+  //    Serial.println("Set operating mode");
+  //  else
+  //    Serial.println("Error: Set operating mode failed for left yaw");
+
+  //SECTION TO TURN ON TORQUE (ENABLE MOVEMENT)
+  // Turn on torque LEFT YAW
+  if (dxl->write(DXL_ID_YAW_L, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_on, TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("Torque on for left yaw");
+  else
+    Serial.println("Error: Torque on failed for left yaw");
+
+  // Turn on torque LEFT PITCH
+  if (dxl->write(DXL_ID_PITCH_L, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_on, TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("Torque on for left PITCH");
+  else
+    Serial.println("Error: Torque on failed for left PITCH");
+
+  // Turn on torque RIGHT YAW
+  if (dxl->write(DXL_ID_YAW_R, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_on, TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("Torque on for right yaw");
+  else
+    Serial.println("Error: Torque on failed for right yaw");
+
+  // Turn on torque RIGHT PITCH
+  if (dxl->write(DXL_ID_PITCH_R, TORQUE_ENABLE_ADDR, (uint8_t*)&turn_on, TORQUE_ENABLE_ADDR_LEN, TIMEOUT))
+    Serial.println("Torque on for right PITCH");
+  else
+    Serial.println("Error: Torque on failed for right pitch");
 
   // 1500 microseconds is the default center for servo objects from class Servo.h
-  this->lXCenter = 1500;
-  this->lZCenter = 1500;
-  this->rXCenter = 1500;
-  this->rZCenter = 1500;
+  this->lXCenter = 2048;
+  this->lZCenter = 2048;
+  this->rXCenter = 2048;
+  this->rZCenter = 2048;
 
   // setting up the default values for microSecondsPerDegree (empirically determined)
-  this->lXmicroSecondsPerDegree = 10.20408163 * 1.05;
-  this->lZmicroSecondsPerDegree = 10.20408163 * 1.05;
-  this->rXmicroSecondsPerDegree = 10.20408163;
-  this->rZmicroSecondsPerDegree = 10.20408163;
-
-  this->xServoL.writeMicroseconds(this->lXCenter);
-  this->zServoL.writeMicroseconds(this->lZCenter);
-  this->xServoR.writeMicroseconds(this->rXCenter);
-  this->zServoR.writeMicroseconds(this->rZCenter);
+  this->countsPerDegree = 34.1333333;
+  
+  // writing all servos to middle position
+  this->dxl->write(DXL_ID_YAW_L, GOAL_POSITION_ADDR, (uint8_t*)&lXCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT); //writes to left yaw
+  this->dxl->write(DXL_ID_PITCH_L, GOAL_POSITION_ADDR, (uint8_t*)&lZCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to left pitch
+  this->dxl->write(DXL_ID_YAW_R, GOAL_POSITION_ADDR, (uint8_t*)&rXCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right yaw
+  this->dxl->write(DXL_ID_PITCH_R, GOAL_POSITION_ADDR, (uint8_t*)&rZCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right pitch
 
   // setting initial values to the eye subsystem transformation matrices
-  this->gTD = KinematicChain::xform(0, 0, 0, (-0.004), (0.0636), (0.0856));
+  this->gTD = KinematicChain::xform(0, 0, 0, (-0.004), (0.0636), (0.0856)); // units in meters
   this->gDL = KinematicChain::xform(0, 0, 0, (-0.03475), 0, 0);
   this->gDR = KinematicChain::xform(0, 0, 0, (0.03475), 0, 0);
 
@@ -66,14 +129,24 @@ void Eyes::parallax(BLA::Matrix<4> leftDotPos, BLA::Matrix<4> rightDotPos)
   float alphaRight  = atan2(rightDotPos(1), rightDotPos(0)) * (180 / M_PI);
   float betaRight = atan2(rightDotPos(2), sqrt((rightDotPos(0) * rightDotPos(0)) + (rightDotPos(1) * rightDotPos(1)))) * (180 / M_PI);
 
-  // writing the angle values to the X and Z servos.
-  this->xServoL.writeMicroseconds(this->lXCenter + (90 - alphaLeft) * this->lXmicroSecondsPerDegree);
-  //delay(50);
-  this->zServoL.writeMicroseconds(this->lZCenter + (betaLeft) * this->lZmicroSecondsPerDegree);
-  //delay(50);
-  this->xServoR.writeMicroseconds(this->rXCenter + (90 - alphaRight) * this->rXmicroSecondsPerDegree);
-  //delay(50);
-  this->zServoR.writeMicroseconds(this->rZCenter - (betaRight) * this->rZmicroSecondsPerDegree);
+  // converting degrees to counts
+  alphaLeft = alphaLeft * this->countsPerDegree;
+  betaLeft = betaLeft * this->countsPerDegree;
+  alphaRight = alphaRight * this->countsPerDegree;
+  betaRight = betaRight * this->countsPerDegree;
+
+  this->goalPosition = this->lXCenter + static_cast<uint16_t>(alphaLeft);
+  this->dxl->write(DXL_ID_YAW_L, GOAL_POSITION_ADDR, (uint8_t*)&goalPosition, GOAL_POSITION_ADDR_LEN, TIMEOUT); //writes to left yaw
+  
+  this->goalPosition = this->lZCenter + static_cast<uint16_t>(betaLeft);
+  this->dxl->write(DXL_ID_PITCH_L, GOAL_POSITION_ADDR, (uint8_t*)&goalPosition, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to left pitch
+  
+  this->goalPosition = this->rXCenter + static_cast<uint16_t>(alphaRight);
+  this->dxl->write(DXL_ID_YAW_R, GOAL_POSITION_ADDR, (uint8_t*)&goalPosition, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right yaw
+  
+  this->goalPosition = this->rZCenter - static_cast<uint16_t>(betaRight);
+  this->dxl->write(DXL_ID_PITCH_R, GOAL_POSITION_ADDR, (uint8_t*)&goalPosition, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right pitch
+
   delay(50);
 }
 
@@ -148,7 +221,7 @@ void Eyes::ReadEyeCalibrationVariablesFromProm()
    on the screen. Parameter screenDotPos gives the coordinates of
    the desired position.
 */
-void Eyes::ParallaxEyesToPos(BLA::Matrix<4> screenDotPos, BLA::Matrix<4,4> gLS, BLA::Matrix<4,4> gRS)
+void Eyes::ParallaxEyesToPos(BLA::Matrix<4> screenDotPos, BLA::Matrix<4, 4> gLS, BLA::Matrix<4, 4> gRS)
 {
   BLA::Matrix<4> leftDotPos = gLS * screenDotPos;
   BLA::Matrix<4> rightDotPos = gRS * screenDotPos;
@@ -162,7 +235,7 @@ void Eyes::ParallaxEyesToPos(BLA::Matrix<4> screenDotPos, BLA::Matrix<4,4> gLS, 
    as a parameter, which is the signal transmitted by the Windows API.
    This character is used as input to the calibration sequence.
 */
-void Eyes::CalibrateEyes(char eyeCalCommand, BLA::Matrix<4,4> gLS, BLA::Matrix<4,4> gRS)
+void Eyes::CalibrateEyes(char eyeCalCommand, BLA::Matrix<4, 4> gLS, BLA::Matrix<4, 4> gRS)
 {
   // Dot position array corresponding to desired screen location
   // set to zero for calibration to calibrate to center of screen.
@@ -180,37 +253,37 @@ void Eyes::CalibrateEyes(char eyeCalCommand, BLA::Matrix<4,4> gLS, BLA::Matrix<4
   {
     case (rightZ) : {
         if (eyeCalCommand == 'u') {
-          this->rZCenter -= 2;
+          this->rZCenter -= 1;
         }
         if (eyeCalCommand == 'd') {
-          this->rZCenter += 2;
+          this->rZCenter += 1;
         }
         break;
       }
     case (leftZ) : {
         if (eyeCalCommand == 'u') {
-          this->lZCenter += 2;
+          this->lZCenter += 1;
         }
         if (eyeCalCommand == 'd') {
-          this->lZCenter -= 2;
+          this->lZCenter -= 1;
         }
         break;
       }
     case (rightX) : {
         if (eyeCalCommand == 'u') {
-          this->rXCenter += 2;
+          this->rXCenter += 1;
         }
         if (eyeCalCommand == 'd') {
-          this->rXCenter -= 2;
+          this->rXCenter -= 1;
         }
         break;
       }
     case (leftX) : {
         if (eyeCalCommand == 'u') {
-          this->lXCenter += 2;
+          this->lXCenter += 1;
         }
         if (eyeCalCommand == 'd') {
-          this->lXCenter -= 2;
+          this->lXCenter -= 1;
         }
         break;
       }

@@ -8,10 +8,30 @@
 #ifndef _EYESUBSYSTEM_H
 #define _EYESUBSYSTEM_H
 
-#include <Servo.h>
+//DYNAMIXEL DEFINITIONS
+#define CW_ANGLE_LIMIT_ADDR         6
+#define CCW_ANGLE_LIMIT_ADDR        8
+#define ANGLE_LIMIT_ADDR_LEN        2
+#define OPERATING_MODE_ADDR_LEN     2
+#define TORQUE_ENABLE_ADDR          24
+#define TORQUE_ENABLE_ADDR_LEN      1
+#define LED_ADDR                    25
+#define LED_ADDR_LEN                1
+#define GOAL_POSITION_ADDR          30
+#define GOAL_POSITION_ADDR_LEN      2
+#define PRESENT_POSITION_ADDR       36
+#define PRESENT_POSITION_ADDR_LEN   2
+#define TIMEOUT 10    //default communication timeout 10ms
+
+//#include <Servo.h>
 #include <EEPROM.h>
+#include <Dynamixel2Arduino.h>
 #include "KinematicChain.h"
 #include "Function.h"
+
+/*
+   #defining constants
+*/
 
 /*
    This enumeration is used in servo calibration to determine which servo motor, on which side
@@ -36,15 +56,30 @@ class Eyes
 {
   private:
     // Servo objects for left and right eyes
-    Servo xServoL;
-    Servo zServoL;
-    Servo xServoR;
-    Servo zServoR;
+    Dynamixel2Arduino *dxl; //NEW
+
+    /*
+       Dynamixel constants
+    */
+    uint8_t turn_on = 1;
+    uint8_t turn_off = 0;
+    const uint8_t DXL_DIR_PIN =    4;
+
+    const uint8_t DXL_ID_YAW_L = 1;           //ID NUMBER FOR LEFT YAW SERVO
+    const uint8_t DXL_ID_PITCH_L = 2;         //ID NUMBER FOR LEFT PITCH SERVO
+    const uint8_t DXL_ID_YAW_R = 3;           //ID NUMBER FOR RIGHT YAW SERVO
+    const uint8_t DXL_ID_PITCH_R = 4;         //ID NUMBER FOR RIGHT PITCH SERVO
+
+    const float DXL_PROTOCOL_VERSION = 1.0;
+    uint16_t goalPosition = 0;
+//    uint16_t goalAngle = 0;
+
+    // declaring counts per degree for dynamixel objects
+    float countsPerDegree;
+
     // center locations in microseconds for the servo objects.
-    long int lXCenter, lZCenter, rXCenter, rZCenter;
-    // variable denoting the number of steps required to move the eyes 1 degree on the screen.
-    // (Empirically determined)
-    float lXmicroSecondsPerDegree, lZmicroSecondsPerDegree, rXmicroSecondsPerDegree, rZmicroSecondsPerDegree;
+    uint16_t lXCenter, lZCenter, rXCenter, rZCenter;
+    
     // this function makes the eyes parallax or look at a single point on the screen
     void parallax(BLA::Matrix<4> leftDotPos, BLA::Matrix<4> rightDotPos);
 

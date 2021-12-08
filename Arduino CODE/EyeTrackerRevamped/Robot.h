@@ -7,7 +7,7 @@
 #ifndef _ROBOT_H
 #define _ROBOT_H
 
-#include "NeckClass.h"
+//#include "NeckClass.h"
 #include "EyeSubsystem.h"
 #include "Shoulder.h"
 #include <BasicLinearAlgebra.h>
@@ -26,7 +26,7 @@ class Robot
     StateMachineState robotState;
     Eyes robotEyes;
     Shoulder robotShoulder;
-    RobotNeck robotNeck;
+    //RobotNeck robotNeck;
     //gaze coordinates
     BLA::Matrix<4> screenDotPos;
 
@@ -42,7 +42,7 @@ class Robot
 
     void runEyeCalibrationState();
     void runShoulderCalibrationState();
-    void runNeckCalibrationState();
+    //void runNeckCalibrationState();
 
   protected:
     /*

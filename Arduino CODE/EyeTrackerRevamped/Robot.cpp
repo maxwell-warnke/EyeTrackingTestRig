@@ -27,7 +27,7 @@ void Robot::init()
 {
   this->robotEyes.init();
   this->robotShoulder.init();
-  this->robotNeck.init();
+  //this->robotNeck.init();
 
   this->robotEyes.ReadEyeCalibrationVariablesFromProm();
 
@@ -35,8 +35,8 @@ void Robot::init()
   this->robotShoulder.ReadShoulderPositionFromProm();
 
   // reading the last neck position from prom and updating the kinematic chain
-  this->robotNeck.ReadNeckPositionFromProm();
-  this->robotNeck.SetLastNeckPosition();
+  //this->robotNeck.ReadNeckPositionFromProm();
+  //this->robotNeck.SetLastNeckPosition();
 
   this->updateKinematicChain();
 }
@@ -61,8 +61,11 @@ char Robot::getSerialCommand()
 */
 void Robot::updateKinematicChain()
 {
-  this->gLS = this->robotEyes.GetInverseLeftEyeTransformation() * this->robotNeck.GetInverseNeckTransformation() * this->robotShoulder.GetInverseShoulderTransformation();
-  this->gRS = this->robotEyes.GetInverseRightEyeTransformation() * this->robotNeck.GetInverseNeckTransformation() * this->robotShoulder.GetInverseShoulderTransformation();
+//  this->gLS = this->robotEyes.GetInverseLeftEyeTransformation() * this->robotNeck.GetInverseNeckTransformation() * this->robotShoulder.GetInverseShoulderTransformation();
+//  this->gRS = this->robotEyes.GetInverseRightEyeTransformation() * this->robotNeck.GetInverseNeckTransformation() * this->robotShoulder.GetInverseShoulderTransformation();
+  
+  this->gLS = this->robotEyes.GetInverseLeftEyeTransformation() *  this->robotShoulder.GetInverseShoulderTransformation();
+  this->gRS = this->robotEyes.GetInverseRightEyeTransformation() * this->robotShoulder.GetInverseShoulderTransformation();
 }
 
 /*
@@ -107,14 +110,14 @@ void Robot::setRobotPosition(char command)
         this->robotShoulder.MoveShoulderToPosition(-goX, -goY, -goZ);
         break;
       }
-    case ('n'): {
-        float phiR = SerialTerminal->parseFloat();
-        float phiS = SerialTerminal->parseFloat();
-        float phiD = SerialTerminal->parseFloat();
-
-        this->robotNeck.MoveNeckManually(phiR, phiS, phiD);        
-        break;
-      }
+//    case ('n'): {
+//        float phiR = SerialTerminal->parseFloat();
+//        float phiS = SerialTerminal->parseFloat();
+//        float phiD = SerialTerminal->parseFloat();
+//
+//        this->robotNeck.MoveNeckManually(phiR, phiS, phiD);        
+//        break;
+//      }
     default: break;
   }
   this->updateKinematicChain();
@@ -143,14 +146,14 @@ void Robot::getRobotPosition(char command)
 
         break;
       }
-    case ('n'): {
-        SerialTerminal->print(this->robotNeck.GetLastNeckPosition("PhiR"));
-        SerialTerminal->print(", ");
-        SerialTerminal->print(this->robotNeck.GetLastNeckPosition("PhiS"));
-        SerialTerminal->print(", ");
-        SerialTerminal->println(this->robotNeck.GetLastNeckPosition("PhiD"));
-        break;
-      }
+//    case ('n'): {
+//        SerialTerminal->print(this->robotNeck.GetLastNeckPosition("PhiR"));
+//        SerialTerminal->print(", ");
+//        SerialTerminal->print(this->robotNeck.GetLastNeckPosition("PhiS"));
+//        SerialTerminal->print(", ");
+//        SerialTerminal->println(this->robotNeck.GetLastNeckPosition("PhiD"));
+//        break;
+//      }
     default: break;
   }
 }
@@ -180,13 +183,13 @@ void Robot::runRobotRunState()
 
   else if (command == 'm') {
     this->robotShoulder.WriteShoulderPositionToProm();
-
-    this->robotNeck.WriteNeckPositionToProm();
+//
+//    this->robotNeck.WriteNeckPositionToProm();
 
     this->SetState(static_cast<int>(MenuMode));
   }
-
-  this->robotNeck.RunSteppers();
+//
+//  this->robotNeck.RunSteppers();
   this->robotEyes.ParallaxEyesToPos(this->screenDotPos, this->gLS, this->gRS);
 }
 
@@ -234,23 +237,23 @@ void Robot::runShoulderCalibrationState()
    Function to obtain calibration commands for the neck from the API
    and subsequently pass them onto the neck object.
 */
-void Robot::runNeckCalibrationState()
-{
-  char neckCalCommand = this->getSerialCommand();
-
-  // calling robotEyes object to perform calibration of eyes.
-  this->robotNeck.CalibrateNeck(neckCalCommand);
-
-  // if calibration has been stopped, return to MenuMode;
-  if (neckCalCommand == 'm')
-  {
-    this->updateKinematicChain();
-
-    // writing last neck position variables to prom
-    this->robotNeck.WriteNeckPositionToProm();
-    this->SetState(static_cast<int>(MenuMode));
-  }
-}
+//void Robot::runNeckCalibrationState()
+//{
+//  char neckCalCommand = this->getSerialCommand();
+//
+//  // calling robotEyes object to perform calibration of eyes.
+//  this->robotNeck.CalibrateNeck(neckCalCommand);
+//
+//  // if calibration has been stopped, return to MenuMode;
+//  if (neckCalCommand == 'm')
+//  {
+//    this->updateKinematicChain();
+//
+//    // writing last neck position variables to prom
+//    this->robotNeck.WriteNeckPositionToProm();
+//    this->SetState(static_cast<int>(MenuMode));
+//  }
+//}
 
 /*
    Function to set the state for the Robot.
@@ -293,11 +296,11 @@ void Robot::RunState()
         (this)->runShoulderCalibrationState();
         break;
       }
-    case (NeckCalibrate):
-      {
-        (this)->runNeckCalibrationState();
-        break;
-      }
+//    case (NeckCalibrate):
+//      {
+//        (this)->runNeckCalibrationState();
+//        break;
+//      }
     case (RobotRun):
       {
         (this)->runRobotRunState();
