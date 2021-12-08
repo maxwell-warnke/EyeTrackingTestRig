@@ -1,0 +1,6 @@
+[Part Management]
+Configuration File=C:\Cadence\SPB_17.4\tools\Capture\Samples\BENCHACC.DBC
+[Footprint Viewer Type]
+Type=Allegro
+[Allegro Footprints]
+Dir0=C:\Cadence\SPB_17.4\share\pcb\pcb_lib\symbols
