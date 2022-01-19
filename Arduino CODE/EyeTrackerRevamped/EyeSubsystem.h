@@ -63,7 +63,7 @@ class Eyes
     */
     uint8_t turn_on = 1;
     uint8_t turn_off = 0;
-    const uint8_t DXL_DIR_PIN =    4;
+    const uint8_t DXL_DIR_PIN =    16;
 
     const uint8_t DXL_ID_YAW_L = 1;           //ID NUMBER FOR LEFT YAW SERVO
     const uint8_t DXL_ID_PITCH_L = 2;         //ID NUMBER FOR LEFT PITCH SERVO

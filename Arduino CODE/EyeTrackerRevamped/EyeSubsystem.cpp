@@ -103,8 +103,18 @@ void Eyes::init()
   this->dxl->write(DXL_ID_YAW_R, GOAL_POSITION_ADDR, (uint8_t*)&rXCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right yaw
   this->dxl->write(DXL_ID_PITCH_R, GOAL_POSITION_ADDR, (uint8_t*)&rZCenter, GOAL_POSITION_ADDR_LEN, TIMEOUT);//writes to right pitch
 
-  // setting initial values to the eye subsystem transformation matrices
-  this->gTD = KinematicChain::xform(0, 0, 0, (-0.004), (0.0636), (0.0856)); // units in meters
+/*
+      T - will be the frame of reference located at the center of the top of the neck.
+      D - will be the frame of reference at the center of the eye mechanisms,
+      with Z up, X to the right and Y along the axis of the straight 90-degree eyes
+      L - will be the left eye's frame of reference with the origin at the center of rotation
+      and is aligned with the D frame when the 90-degree angle is commanded
+      R - will be the right eye's frame of reference with the origin at the center of rotation
+      and is aligned with D frame when the 90-degree angle is commanded
+    */
+
+  // setting initial values to the eye subsystem transformation matrices, units in meters
+ // this->gTD = KinematicChain::xform(0, 0, 0, (-0.004), (0.0636), (0.0856)); 
   this->gDL = KinematicChain::xform(0, 0, 0, (-0.03475), 0, 0);
   this->gDR = KinematicChain::xform(0, 0, 0, (0.03475), 0, 0);
 
